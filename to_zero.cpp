@@ -179,7 +179,7 @@ int main(int argc, char **argv)
 	odomq[1]=odominfo.yo;
 	odomq[2]=odominfo.zo;
 	odomq[3]=odominfo.wo;
-	odomvector = tf::quatRotate(odomq, vector);   // rotation maybe wrong    problem 1 or totall wrong
+	odomvector = tf::quatRotate(odomq, vector);   // rotation maybe wrong    problem 1 or totall wrong  https://answers.ros.org/question/36517/how-to-construct-a-vector-from-quaternion/
 	x=pathinfo.x[sequence]-odominfo.x;
 	y=pathinfo.y[sequence]-odominfo.y;
 	xdir=x/(x*x+y*y);
