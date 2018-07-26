@@ -2,6 +2,7 @@
 
 ## Install
 Clone this project inside your catkin workspace source folder (default `~/catkin_ws/src/`).
+In case of error, rename the project folder `t0_zer0` .
 
 ### Launch
 
