@@ -15,5 +15,7 @@ rostopic pub /rtabmap/setgoal geometry_msgs/PoseStamped '{header: {stamp: now, f
 
 
 http://wiki.ros.org/rtabmap_ros/Tutorials/StereoOutdoorMapping
+
 http://wiki.ros.org/rtabmap_ros/Tutorials/StereoHandHeldMapping
+
 https://answers.ros.org/question/47973/publishing-to-move_base_simplegoal/
