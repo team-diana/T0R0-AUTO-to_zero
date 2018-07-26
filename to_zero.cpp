@@ -50,7 +50,7 @@ class path
 };
 
 
-void path::callback(const nav_msgs::Path::ConstPtr& msg)
+void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong
 {
   ROS_INFO("Seq: [%d]", msg->header.seq);
   int i=0;
@@ -103,7 +103,7 @@ uint16_t FloatToUint(float n)
 
 
 
-void turn (float b, float a)
+void turn (float b, float a)   // motor 
 {
 	uint16_t left;
 	uint16_t right;
@@ -122,7 +122,7 @@ void turn (float b, float a)
 }
 
 
-void go (float a)
+void go (float a)    //motor
 {
 	uint16_t left;
 	uint16_t right;
@@ -156,8 +156,8 @@ int main(int argc, char **argv)
   ros::Subscriber subpath = n.subscribe<nav_msgs::Path>("/rtabmap/local_path", 1, &path::callback, &pathinfo);
   planclass plan;
   plan.nextpoint(0);
-  tf::Quaternion odomq(1, 0, 0, 0);
-  tf::Vector3 vector(0, 1, 0);
+  tf::Quaternion odomq(1, 0, 0, 0);// modify here   problem 1
+  tf::Vector3 vector(0, 1, 0);   // modify here     problem 1
   tf::Vector3 odomvector;
   float x,y,xdir,ydir,xod,yod;
   
@@ -179,7 +179,7 @@ int main(int argc, char **argv)
 	odomq[1]=odominfo.yo;
 	odomq[2]=odominfo.zo;
 	odomq[3]=odominfo.wo;
-	odomvector = tf::quatRotate(odomq, vector);
+	odomvector = tf::quatRotate(odomq, vector);   // rotation maybe wrong    problem 1 or totall wrong
 	x=pathinfo.x[sequence]-odominfo.x;
 	y=pathinfo.y[sequence]-odominfo.y;
 	xdir=x/(x*x+y*y);
