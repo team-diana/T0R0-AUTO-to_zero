@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 	ydir=y/(x*x+y*y);
 	xod=odomvector[0]/(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
 	yod=odomvector[1]/(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
-	if (((xdir-xod)*(xdir-xod)+(ydir-yod)*(ydir-yod))>=5)
+	if (((xdir-xod)*(xdir-xod)+(ydir-yod)*(ydir-yod))>=0.2)
 {
 	turn (xdir-xod,ydir-yod);
 	continue;
