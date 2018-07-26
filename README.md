@@ -18,10 +18,12 @@ rosrun tf static_transform_publisher 0 0 0 -1.5707963267948966 0 -1.570796326794
 roslaunch rtabmap_ros rtabmap.launch rtabmap_args:="--delete_db_on_start --Vis/CorFlowMaxLevel 5 --Stereo/MaxDisparity 200" right_image_topic:=/stereo_camera/right/image_rect_color stereo:=true
 ```
 
-```bash  these two command must be used together
+```bash  
 rostopic pub /rtabmap/setgoal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "map"}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation: {w: 1.0}}}'
 
 rosrun to_zero to_zero
+
+[these two command must be used together]
 ```
 
 ## Useful Resources
