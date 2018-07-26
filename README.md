@@ -11,6 +11,7 @@ roslaunch rtabmap_ros rtabmap.launch rtabmap_args:="--delete_db_on_start --Vis/C
 
 rostopic pub /rtabmap/setgoal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "map"}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation: {w: 1.0}}}'
 
+rosrun to_zero to_zero
 
 
 
