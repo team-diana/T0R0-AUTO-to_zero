@@ -1,4 +1,8 @@
 # to_zero
+
+## Commands to launch this project
+
+```bash
 export ROS_NAMESPACE=camera
 
 roslaunch zed_wrapper zed_camera.launch publish_tf:=false
@@ -12,11 +16,12 @@ roslaunch rtabmap_ros rtabmap.launch rtabmap_args:="--delete_db_on_start --Vis/C
 rostopic pub /rtabmap/setgoal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "map"}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation: {w: 1.0}}}'
 
 rosrun to_zero to_zero
+```
 
+## Useful Resources
 
+- ![StereoOutdoorMapping](http://wiki.ros.org/rtabmap_ros/Tutorials/StereoOutdoorMapping)
 
-http://wiki.ros.org/rtabmap_ros/Tutorials/StereoOutdoorMapping
+- ![StereoHandHeldMapping](http://wiki.ros.org/rtabmap_ros/Tutorials/StereoHandHeldMapping)
 
-http://wiki.ros.org/rtabmap_ros/Tutorials/StereoHandHeldMapping
-
-https://answers.ros.org/question/47973/publishing-to-move_base_simplegoal/
+- ![publishing-to-move_base_simplegoal](https://answers.ros.org/question/47973/publishing-to-move_base_simplegoal/)
