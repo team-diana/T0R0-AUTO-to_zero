@@ -26,8 +26,8 @@ rosrun to_zero to_zero
 
 ## Useful Resources
 
-- ![StereoOutdoorMapping](http://wiki.ros.org/rtabmap_ros/Tutorials/StereoOutdoorMapping)
+[StereoOutdoorMapping](http://wiki.ros.org/rtabmap_ros/Tutorials/StereoOutdoorMapping)
 
-- ![StereoHandHeldMapping](http://wiki.ros.org/rtabmap_ros/Tutorials/StereoHandHeldMapping)
+[StereoHandHeldMapping](http://wiki.ros.org/rtabmap_ros/Tutorials/StereoHandHeldMapping)
 
-- ![publishing-to-move_base_simplegoal](https://answers.ros.org/question/47973/publishing-to-move_base_simplegoal/)
+[publishing-to-move_base_simplegoal](https://answers.ros.org/question/47973/publishing-to-move_base_simplegoal/)
