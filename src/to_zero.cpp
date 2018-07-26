@@ -7,7 +7,7 @@
 #include <tf/tf.h>
 
 
-class odom 
+class odom     // class is a necessary structure to read data from the rostopic
 {
   public:
     float x;
@@ -18,11 +18,11 @@ class odom
     float zo;
     float wo;
 
-    void callback(const nav_msgs::Odometry::ConstPtr& msg);
+    void callback(const nav_msgs::Odometry::ConstPtr& msg);  
 };
 
 
-void odom::callback(const nav_msgs::Odometry::ConstPtr& msg)
+void odom::callback(const nav_msgs::Odometry::ConstPtr& msg)  // function to read data
 {
   //ROS_INFO("Seq: [%d]", msg->header.seq);
 
@@ -50,7 +50,7 @@ class path
 };
 
 
-void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong
+void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong,modify the while loop to get better
 {
   ROS_INFO("Seq: [%d]", msg->header.seq);
   int i=0;
@@ -72,7 +72,7 @@ void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong
 
 }
 
-class planclass
+class planclass                    //store the next target
 {
      private:
      int point;
@@ -96,7 +96,7 @@ int planclass::nowpoint()
 }
 
 
-uint16_t FloatToUint(float n)
+uint16_t FloatToUint(float n)              // convert the data to uint16
 {
    return (uint16_t)(*(uint16_t*)&n);
 }
@@ -135,7 +135,7 @@ void go (float a)    //motor
 
 }
 
-float distance(float xo,float yo,float xp,float yp )
+float distance(float xo,float yo,float xp,float yp )       // caculate the distance
 {
 
  float distance=sqrt((xp-xo)*(xp-xo)+(yp-yo)*(yp-yo));
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
   ros::Rate loop_rate(30); 
   odom odominfo;
-  ros::Subscriber subodom = n.subscribe<nav_msgs::Odometry>("/rtabmap/odom", 1, &odom::callback, &odominfo);
+  ros::Subscriber subodom = n.subscribe<nav_msgs::Odometry>("/rtabmap/odom", 1, &odom::callback, &odominfo);  // the template to sub from ros topic
   path pathinfo;
   ros::Subscriber subpath = n.subscribe<nav_msgs::Path>("/rtabmap/local_path", 1, &path::callback, &pathinfo);
   planclass plan;
@@ -170,7 +170,7 @@ int main(int argc, char **argv)
 	
 	int sequence;
 	sequence=plan.nowpoint();
-	if (distance(odominfo.x,odominfo.y,pathinfo.x[sequence],pathinfo.y[sequence])<=0.5)
+	if (distance(odominfo.x,odominfo.y,pathinfo.x[sequence],pathinfo.y[sequence])<=0.5)  //to decide if you reach your target, if yes, set next target
 {
 	plan.nextpoint(sequence+1); 
 	continue;
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 	ydir=y/(x*x+y*y);
 	xod=odomvector[0]/(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
 	yod=odomvector[1]/(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
-	if (((xdir-xod)*(xdir-xod)+(ydir-yod)*(ydir-yod))>=0.2)
+	if (((xdir-xod)*(xdir-xod)+(ydir-yod)*(ydir-yod))>=0.2)      // decide if you get the right orientation,if not ,turn 
 {
 	turn (xdir-xod,ydir-yod);
 	continue;
@@ -194,7 +194,7 @@ int main(int argc, char **argv)
 }
 	else
 {
-	go(10);
+	go(10);                    //  best to use the function, reduce velocity while reaching
 	continue;
 
 }
@@ -202,4 +202,8 @@ int main(int argc, char **argv)
         loop_rate.sleep();
     }
 }
+
+//if map update continously, the path may also change, then you can pub the goal in a loop, and just subscribe the first 3-5 data,
+//reference :http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28c%2B%2B%29
+
 
