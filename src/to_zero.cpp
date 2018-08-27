@@ -2,8 +2,8 @@
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <std_msgs/String.h>
-#include <stdio.h>    
-#include <math.h> 
+#include <stdio.h>
+#include <math.h>
 #include <tf/tf.h>
 
 
@@ -18,7 +18,7 @@ class odom     // class is a necessary structure to read data from the rostopic
     float zo;
     float wo;
 
-    void callback(const nav_msgs::Odometry::ConstPtr& msg);  
+    void callback(const nav_msgs::Odometry::ConstPtr& msg);
 };
 
 
@@ -32,9 +32,9 @@ void odom::callback(const nav_msgs::Odometry::ConstPtr& msg)  // function to rea
 	 xo=msg->pose.pose.orientation.x;
 	 yo=msg->pose.pose.orientation.y;
 	 zo=msg->pose.pose.orientation.z;
-	 wo=msg->pose.pose.orientation.w;  
+	 wo=msg->pose.pose.orientation.w;
          ROS_INFO("subodom-> x: [%f], y: [%f], z: [%f]\n", x,y,z);
-//return msg->pose.pose.position.x;  
+//return msg->pose.pose.position.x;
 return ;
 }
 
@@ -56,7 +56,7 @@ void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong,mo
   int i=0;
   float a,b,c;
   while(a!=0.00 && b!=0.00 && c!=0.00)
-{       
+{
 	 x[i]=msg->poses[i].pose.position.x;
 	 a=x[i]*10;
 	ROS_INFO("subpathpoint%d-> x: [%f]\n", i,x[i]);
@@ -68,7 +68,7 @@ void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong,mo
 };
 
 //ROS_INFO("Position-> x: [%f], y: [%f], z: [%f]\n", x,y,z);
-//return msg->pose.pose.position.x;  
+//return msg->pose.pose.position.x;
 
 }
 
@@ -103,19 +103,19 @@ uint16_t FloatToUint(float n)              // convert the data to uint16
 
 
 
-void turn (float b, float a)   // motor 
+void turn (float b, float a)   // motor
 {
 	uint16_t left;
 	uint16_t right;
-	if (a == 0)  
-{  
+	if (a == 0)
+{
         a+=5;
-}  	
+}
 	float leftfloat=a;
 	float rightfloat=-a;
 	FloatToUint( leftfloat);
 	FloatToUint( rightfloat);
-	
+
         printf("%hu\n", left);
 	printf("%hu\n", right);
 
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 
   ros::init(argc, argv, "to_zero");
   ros::NodeHandle n;
-  ros::Rate loop_rate(30); 
+  ros::Rate loop_rate(30);
   odom odominfo;
   ros::Subscriber subodom = n.subscribe<nav_msgs::Odometry>("/rtabmap/odom", 1, &odom::callback, &odominfo);  // the template to sub from ros topic
   path pathinfo;
@@ -160,19 +160,19 @@ int main(int argc, char **argv)
   tf::Vector3 vector(0, 1, 0);   // modify here     problem 1
   tf::Vector3 odomvector;
   float x,y,xdir,ydir,xod,yod;
-  
-  while (ros::ok()) 
+
+  while (ros::ok())
     {
         ros::spinOnce();
 	ROS_INFO("storeodompoint-> x: [%f]\n", odominfo.x);
 	//ROS_INFO("storepathpoint-> x: [%f]\n", pathinfo.x);
 	//ROS_INFO("storepathpoint-> y: [%f]\n", pathinfo.y);
-	
+
 	int sequence;
 	sequence=plan.nowpoint();
 	if (distance(odominfo.x,odominfo.y,pathinfo.x[sequence],pathinfo.y[sequence])<=0.5)  //to decide if you reach your target, if yes, set next target
 {
-	plan.nextpoint(sequence+1); 
+	plan.nextpoint(sequence+1);
 	continue;
 }
 	odomq[0]=odominfo.xo;
@@ -182,11 +182,11 @@ int main(int argc, char **argv)
 	odomvector = tf::quatRotate(odomq, vector);   // rotation maybe wrong    problem 1 or totall wrong  https://answers.ros.org/question/36517/how-to-construct-a-vector-from-quaternion/
 	x=pathinfo.x[sequence]-odominfo.x;
 	y=pathinfo.y[sequence]-odominfo.y;
-	xdir=x/(x*x+y*y);                          //normalize the vector
-	ydir=y/(x*x+y*y);
-	xod=odomvector[0]/(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);       ////normalize the vector
-	yod=odomvector[1]/(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
-	if (((xdir-xod)*(xdir-xod)+(ydir-yod)*(ydir-yod))>=0.2)      // decide if you get the right orientation,if not ,turn 
+	xdir=x/sqrt(x*x+y*y);                          //normalize the vector
+	ydir=y/sqrt(x*x+y*y);
+	xod=odomvector[0]/sqrt(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);       ////normalize the vector
+	yod=odomvector[1]/sqrt(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
+	if (((xdir-xod)*(xdir-xod)+(ydir-yod)*(ydir-yod))>=0.2)      // decide if you get the right orientation,if not ,turn
 {
 	turn (xdir-xod,ydir-yod);
 	continue;
@@ -202,8 +202,8 @@ int main(int argc, char **argv)
         loop_rate.sleep();
     }
 }
+  //bjkn kjn kn
+//vfdnvjvnjvn jkvn djkvn j
 
 //if map update continously, the path may also change, then you can pub the goal in a loop, and just subscribe the first 3-5 data,
 //reference :http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28c%2B%2B%29
-
-
