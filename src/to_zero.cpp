@@ -182,9 +182,9 @@ int main(int argc, char **argv)
 	odomvector = tf::quatRotate(odomq, vector);   // rotation maybe wrong    problem 1 or totall wrong  https://answers.ros.org/question/36517/how-to-construct-a-vector-from-quaternion/
 	x=pathinfo.x[sequence]-odominfo.x;
 	y=pathinfo.y[sequence]-odominfo.y;
-	xdir=x/(x*x+y*y);
+	xdir=x/(x*x+y*y);                          //normalize the vector
 	ydir=y/(x*x+y*y);
-	xod=odomvector[0]/(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
+	xod=odomvector[0]/(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);       ////normalize the vector
 	yod=odomvector[1]/(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
 	if (((xdir-xod)*(xdir-xod)+(ydir-yod)*(ydir-yod))>=0.2)      // decide if you get the right orientation,if not ,turn 
 {
