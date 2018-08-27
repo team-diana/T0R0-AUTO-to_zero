@@ -202,8 +202,7 @@ int main(int argc, char **argv)
         loop_rate.sleep();
     }
 }
-  //bjkn kjn kn
-//vfdnvjvnjvn jkvn djkvn j
+
 
 //if map update continously, the path may also change, then you can pub the goal in a loop, and just subscribe the first 3-5 data,
 //reference :http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28c%2B%2B%29
