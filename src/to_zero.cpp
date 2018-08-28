@@ -104,7 +104,7 @@ uint16_t FloatToUint(float n)              // convert the data to uint16
 
 
 
-void turn (float b, float a)   // motor
+void turn (float b, float a)   // motor // to be modified, input valures are not used
 {
 	uint16_t left;
 	uint16_t right;
@@ -114,11 +114,13 @@ void turn (float b, float a)   // motor
 }
 	float leftfloat=a;
 	float rightfloat=-a;
-	FloatToUint( leftfloat);
-	FloatToUint( rightfloat);
+	left = FloatToUint( leftfloat); //added "left =", otherwise the command was ineffective
+	right = FloatToUint( rightfloat); //added "right=", otherwise the command was ineffective
 
         printf("%hu\n", left);
 	printf("%hu\n", right);
+
+  //it is neccesary to add something to send the output values to motors and to recalculate the position
 
 }
 
@@ -129,10 +131,12 @@ void go (float a)    //motor
 	uint16_t right;
 	float leftfloat=a;
 	float rightfloat=a;
-	FloatToUint( leftfloat);
-	FloatToUint( rightfloat);
+	left = FloatToUint( leftfloat); //added "left =", otherwise the command was ineffective
+	rigth = FloatToUint( rightfloat); //added "right =", otherwise the command was ineffective
         printf("%hu\n", left);
 	printf("%hu\n", right);
+
+  //it is neccesary to add something to send the output values to motors and to recalculate the position
 
 }
 
@@ -185,7 +189,7 @@ int main(int argc, char **argv) //this algorithm does not consider the possibili
 	y=pathinfo.y[sequence]-odominfo.y;
 	xdir=x/sqrt(x*x+y*y);                          //normalize the vector
 	ydir=y/sqrt(x*x+y*y);
-	xod=odomvector[0]/sqrt(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);       ////normalize the vector
+	xod=odomvector[0]/sqrt(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);       //normalize the vector
 	yod=odomvector[1]/sqrt(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
 	if (((xdir-xod)*(xdir-xod)+(ydir-yod)*(ydir-yod))>=0.2)      // decide if you get the right orientation,if not ,turn
 {
