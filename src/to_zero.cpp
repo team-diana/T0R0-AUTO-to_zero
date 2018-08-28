@@ -16,7 +16,7 @@ class odom     // class is a necessary structure to read data from the rostopic
     float xo;
     float yo;
     float zo;
-    float wo;
+    float wo;  //this coordinate could be useless if a simple vector was used for orientation rather than an orientation quaternion
 
     void callback(const nav_msgs::Odometry::ConstPtr& msg);
 };
@@ -32,7 +32,7 @@ void odom::callback(const nav_msgs::Odometry::ConstPtr& msg)  // function to rea
 	 xo=msg->pose.pose.orientation.x;
 	 yo=msg->pose.pose.orientation.y;
 	 zo=msg->pose.pose.orientation.z;
-	 wo=msg->pose.pose.orientation.w;
+	 wo=msg->pose.pose.orientation.w;  // same as above
          ROS_INFO("subodom-> x: [%f], y: [%f], z: [%f]\n", x,y,z);
 //return msg->pose.pose.position.x;
 return ;
@@ -56,7 +56,7 @@ void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong,mo
   ROS_INFO("Seq: [%d]", msg->header.seq);
   int i=0;
   float a,b,c;
-  while(a!=0.00 && b!=0.00 && c!=0.00)
+  while(a!=0.00 && b!=0.00 && c!=0.00) // we should look for a regulation over "i" rather than wait to read a target point (0,0,0) that could never come
 {
 	 x[i]=msg->poses[i].pose.position.x;
 	 a=x[i]*10;
@@ -145,7 +145,7 @@ float distance(float xo,float yo,float xp,float yp )       // caculate the dista
 }
 
 
-int main(int argc, char **argv)
+int main(int argc, char **argv) //this algorithm does not consider the possibility of encountering an obstacle that has to be avoided
 {
 
   ros::init(argc, argv, "to_zero");
