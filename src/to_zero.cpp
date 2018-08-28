@@ -52,6 +52,7 @@ class path
 
 void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong,modify the while loop to get better
 {
+
   ROS_INFO("Seq: [%d]", msg->header.seq);
   int i=0;
   float a,b,c;
@@ -156,8 +157,8 @@ int main(int argc, char **argv)
   ros::Subscriber subpath = n.subscribe<nav_msgs::Path>("/rtabmap/local_path", 1, &path::callback, &pathinfo);
   planclass plan;
   plan.nextpoint(0);
-  tf::Quaternion odomq(1, 0, 0, 0);// modify here   problem 1
-  tf::Vector3 vector(0, 1, 0);   // modify here     problem 1
+  tf::Quaternion odomq(1, 0, 0, 0);// modify here   problem 1 // it should be tf::Quaternion odomq
+  tf::Vector3 vector(0, 1, 0);   // modify here     problem 1 // it should be tf::Vector3 vector
   tf::Vector3 odomvector;
   float x,y,xdir,ydir,xod,yod;
 
@@ -175,10 +176,10 @@ int main(int argc, char **argv)
 	plan.nextpoint(sequence+1);
 	continue;
 }
-	odomq[0]=odominfo.xo;
-	odomq[1]=odominfo.yo;
-	odomq[2]=odominfo.zo;
-	odomq[3]=odominfo.wo;
+	odomq[0]=odominfo.xo;  //error: the odominfo gets data from msg that carries information about the rover orientation
+	odomq[1]=odominfo.yo;  //odomq, instead, is the quaternion that should store the data about the rotation to be applied
+	odomq[2]=odominfo.zo;  //odominfo coordinates should be stored in "vector"
+	odomq[3]=odominfo.wo;  //odomq values has to be calculated
 	odomvector = tf::quatRotate(odomq, vector);   // rotation maybe wrong    problem 1 or totall wrong  https://answers.ros.org/question/36517/how-to-construct-a-vector-from-quaternion/
 	x=pathinfo.x[sequence]-odominfo.x;
 	y=pathinfo.y[sequence]-odominfo.y;
