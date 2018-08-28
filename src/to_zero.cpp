@@ -178,6 +178,7 @@ int main(int argc, char **argv) //this algorithm does not consider the possibili
 	if (distance(odominfo.x,odominfo.y,pathinfo.x[sequence],pathinfo.y[sequence])<=0.5)  //to decide if you reach your target, if yes, set next target
 {
 	plan.nextpoint(sequence+1);
+  //we should add a "stop command" here in order to make the rover stop when reaches a target
 	continue;
 }
 	odomq[0]=odominfo.xo;  //error: the odominfo gets data from msg that carries information about the rover orientation
