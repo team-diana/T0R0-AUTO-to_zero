@@ -1,3 +1,12 @@
+/*
+  This algorithm could be improved by following this tips about "Local Planner":
+
+  http://wiki.ros.org/navigation/Tutorials/Navigation%20Tuning%20Guide
+  http://wiki.ros.org/navigation/Tutorials/RobotSetup
+  http://wiki.ros.org/base_local_planner
+
+*/
+
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
@@ -7,16 +16,16 @@
 #include <tf/tf.h>
 
 
-class odom     // class is a necessary structure to read data from the rostopic
+class odom     // class to read data from the rostopic
 {
   public:
     float x;
     float y;
-    float z;
+    float z;  //since we are developing a 2-D path, this coordinate could be useless
     float xo;
     float yo;
     float zo;
-    float wo;  //this coordinate could be useless if a simple vector was used for orientation rather than an orientation quaternion
+    float wo;
 
     void callback(const nav_msgs::Odometry::ConstPtr& msg);
 };
@@ -28,29 +37,41 @@ void odom::callback(const nav_msgs::Odometry::ConstPtr& msg)  // function to rea
 
 	 x=msg->pose.pose.position.x;
 	 y=msg->pose.pose.position.y;
-	 z=msg->pose.pose.position.z;
+	 z=msg->pose.pose.position.z; //same as above
 	 xo=msg->pose.pose.orientation.x;
 	 yo=msg->pose.pose.orientation.y;
 	 zo=msg->pose.pose.orientation.z;
-	 wo=msg->pose.pose.orientation.w;  // same as above
-         ROS_INFO("subodom-> x: [%f], y: [%f], z: [%f]\n", x,y,z);
-//return msg->pose.pose.position.x;
+	 wo=msg->pose.pose.orientation.w;
+
+   ROS_INFO("subodom-> x: [%f], y: [%f], z: [%f]\n", x,y,z);
+   //return msg->pose.pose.position.x;
 return ;
 }
 
+static void toEulerAngle(const Quaterniond& q, double& yaw) //TO CHECK Quaternion declaration: in "main" it's declared as tf::Quaternion
+{
+
+	// yaw (z-axis rotation), in 2-D that should be the only angle needed
+	double siny = +2.0 * (q.w() * q.z() + q.x() * q.y()); //q.w, q.x, q.y, q.z, values should be changed according to Quaternion declaration
+	double cosy = +1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z());
+	yaw = atan2(siny, cosy);
+
+  //source: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+
+}
 
 class path
 {
   public:
     float x[];
     float y[];
-    float z[];
+    float z[]; //since we are developing a 2-D path, these coordinates could be useless
 
     void callback(const nav_msgs::Path::ConstPtr& msg);
 };
 
 
-void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong,modify the while loop to get better
+void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here MAYBE WRONG,modify the while loop to get better
 {
 
   ROS_INFO("Seq: [%d]", msg->header.seq);
@@ -68,12 +89,9 @@ void path::callback(const nav_msgs::Path::ConstPtr& msg)  // here maybe wrong,mo
 	 i++;
 };
 
-//ROS_INFO("Position-> x: [%f], y: [%f], z: [%f]\n", x,y,z);
-//return msg->pose.pose.position.x;
-
 }
 
-class planclass                    //store the next target
+class planclass             //store the next target
 {
      private:
      int point;
@@ -104,23 +122,48 @@ uint16_t FloatToUint(float n)              // convert the data to uint16
 
 
 
-void turn (float b, float a)   // motor // to be modified, input valures are not used
+void turn (float a)   // motor
 {
 	uint16_t left;
 	uint16_t right;
-	if (a == 0)
+
+  if (a>=0)
 {
-        a+=5;
-}
-	float leftfloat=a;
-	float rightfloat=-a;
-	left = FloatToUint( leftfloat); //added "left =", otherwise the command was ineffective
-	right = FloatToUint( rightfloat); //added "right=", otherwise the command was ineffective
+	float leftfloat=-a;
+	float rightfloat=a;
+	left = FloatToUint( leftfloat);
+	right = FloatToUint( rightfloat);
 
-        printf("%hu\n", left);
+  //it would be better to calculate an angular velocity value
+
+  printf("%hu\n", left);
 	printf("%hu\n", right);
+}
+else if (a<0)
+{
+  float leftfloat=a;
+	float rightfloat=-a;
+	left = FloatToUint( leftfloat);
+	right = FloatToUint( rightfloat);
 
-  //it is neccesary to add something to send the output values to motors and to recalculate the position
+  //it would be better to calculate an angular velocity value
+
+  printf("%hu\n", left);
+	printf("%hu\n", right);
+}
+
+  /*
+    distinction between counter and clockwise rotation accordingly to "a" sign
+    is necessary to let the value reach "0" during rotation
+  */
+
+  //it is neccesary to add something to send the output values to motors
+  // "geometry_msgs/Twist" and "cmd_vel" topics hold velocity values, CHANGES NEEDED
+
+  /*
+  this algorithm continously sends different values to motors, as they constantly reduces.
+  it may be TOO MUCH STRESSFUL for Rover
+  */
 
 }
 
@@ -131,12 +174,18 @@ void go (float a)    //motor
 	uint16_t right;
 	float leftfloat=a;
 	float rightfloat=a;
-	left = FloatToUint( leftfloat); //added "left =", otherwise the command was ineffective
-	rigth = FloatToUint( rightfloat); //added "right =", otherwise the command was ineffective
-        printf("%hu\n", left);
+	left = FloatToUint( leftfloat);
+	rigth = FloatToUint( rightfloat);
+  printf("%hu\n", left);
 	printf("%hu\n", right);
 
-  //it is neccesary to add something to send the output values to motors and to recalculate the position
+  //it is neccesary to add something to send the output values to motors
+  // "geometry_msgs/Twist" and "cmd_vel" topics hold velocity values, CHANGES NEEDED
+
+  /*
+  this algorithm continously sends different values to motors, as they constantly reduces.
+  it may be TOO MUCH STRESSFULL for Rover
+  */
 
 }
 
@@ -149,7 +198,7 @@ float distance(float xo,float yo,float xp,float yp )       // caculate the dista
 }
 
 
-int main(int argc, char **argv) //this algorithm does not consider the possibility of encountering an obstacle that has to be avoided
+int main(int argc, char **argv)
 {
 
   ros::init(argc, argv, "to_zero");
@@ -161,49 +210,58 @@ int main(int argc, char **argv) //this algorithm does not consider the possibili
   ros::Subscriber subpath = n.subscribe<nav_msgs::Path>("/rtabmap/local_path", 1, &path::callback, &pathinfo);
   planclass plan;
   plan.nextpoint(0);
-  tf::Quaternion odomq(1, 0, 0, 0);// modify here   problem 1 // it should be tf::Quaternion odomq
-  tf::Vector3 vector(0, 1, 0);   // modify here     problem 1 // it should be tf::Vector3 vector
-  tf::Vector3 odomvector;
+  tf::Quaternion odomq;
+  double yaw_rov, yaw_target;
   float x,y,xdir,ydir,xod,yod;
+  float dist;
 
   while (ros::ok())
     {
         ros::spinOnce();
-	ROS_INFO("storeodompoint-> x: [%f]\n", odominfo.x);
-	//ROS_INFO("storepathpoint-> x: [%f]\n", pathinfo.x);
+	//ROS_INFO("storeodompoint-> x: [%f]\n", odominfo.x);
 	//ROS_INFO("storepathpoint-> y: [%f]\n", pathinfo.y);
 
-	int sequence;
+  dist = distance(odominfo.x,odominfo.y,pathinfo.x[sequence],pathinfo.y[sequence])
+
+  int sequence;
 	sequence=plan.nowpoint();
-	if (distance(odominfo.x,odominfo.y,pathinfo.x[sequence],pathinfo.y[sequence])<=0.5)  //to decide if you reach your target, if yes, set next target
+	if (dist>=0.5)               // distance_from_target tolerance TBD
+{
+  go(dist)
+  continue;
+}
+  else
 {
 	plan.nextpoint(sequence+1);
-  //we should add a "stop command" here in order to make the rover stop when reaches a target
+  go(0)                         // "stop command"
 	continue;
 }
-	odomq[0]=odominfo.xo;  //error: the odominfo gets data from msg that carries information about the rover orientation
-	odomq[1]=odominfo.yo;  //odomq, instead, is the quaternion that should store the data about the rotation to be applied
-	odomq[2]=odominfo.zo;  //odominfo coordinates should be stored in "vector"
-	odomq[3]=odominfo.wo;  //odomq values has to be calculated
-	odomvector = tf::quatRotate(odomq, vector);   // rotation maybe wrong    problem 1 or totall wrong  https://answers.ros.org/question/36517/how-to-construct-a-vector-from-quaternion/
-	x=pathinfo.x[sequence]-odominfo.x;
-	y=pathinfo.y[sequence]-odominfo.y;
-	xdir=x/sqrt(x*x+y*y);                          //normalize the vector
-	ydir=y/sqrt(x*x+y*y);
-	xod=odomvector[0]/sqrt(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);       //normalize the vector
-	yod=odomvector[1]/sqrt(odomvector[0]*odomvector[0]+odomvector[1]*odomvector[1]);
-	if (((xdir-xod)*(xdir-xod)+(ydir-yod)*(ydir-yod))>=0.2)      // decide if you get the right orientation,if not ,turn
+
+  odomq[0]=odominfo.xo;
+  odomq[1]=odominfo.yo;
+  odomq[2]=odominfo.zo;
+  odomq[3]=odominfo.wo;
+  toEulerAngle(odomq, yaw_rov);
+  yaw_target = atan2((pathinfo.y[sequence]-odominfo.y),(pathinfo.x[sequence]-odominfo.x));
+
+  if ((yaw_target-yaw_rov)>=0.2)      // orientation tolerance TBD
 {
-	turn (xdir-xod,ydir-yod);
+	turn (static_cast <float> (yaw_target-yaw_rov));
 	continue;
 
 }
 	else
 {
-	go(10);                    //  best to use the function, reduce velocity while reaching
+	turn(0);              // "stop command"
 	continue;
 
 }
+  /*
+  FUNDAMENTAL: the above lines about orientation and rotations work ONLY AND
+  ONLY IF the "yaw_rov" value calculated by "toEulerAngle" function is calculated
+  with respect to the same frame of reference of position coordinates.
+  THIS NEEDS TESTING
+  */
 
         loop_rate.sleep();
     }
