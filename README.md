@@ -7,11 +7,11 @@ In case of error, rename the project folder `to_zero` .
 ### Launch
 
 ```bash
-export ROS_NAMESPACE=camera
+export ROS_NAMESPACE=stereo_camera
 
 roslaunch zed_wrapper zed_camera.launch publish_tf:=false
 
-rosrun tf static_transform_publisher 0 0 0 -1.5707963267948966 0 -1.5707963267948966 camera_link zed_center 100
+rosrun tf static_transform_publisher 0 0 0 -1.57079632648966 0 -1.5707963267948966 camera_link zed_left_camera_optical_frame 100
 ```
 
 ```bash
